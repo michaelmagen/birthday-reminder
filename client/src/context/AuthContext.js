@@ -1,13 +1,8 @@
-// Create auth context for firebase auth
+// Create auth context for supabase auth
 
 import { createContext, useContext, useState, useEffect } from 'react'
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from 'firebase/auth'
 
-import auth from '../config/firebase-config'
+import { supabase } from '../config/supabase-config'
 
 const AuthContext = createContext()
 
@@ -16,40 +11,48 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState()
-  const [loading, setLoading] = useState(true)
+  const [session, setSession] = useState()
+  //const [loading, setLoading] = useState(true)
 
-  function register(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password)
+  async function register(email, password, phone, fullName) {
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          name: fullName,
+          phone: phone,
+        },
+      },
+    })
+    console.log({ data, error })
+    return { data, error }
   }
 
   function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password)
+    //return signInWithEmailAndPassword(auth, email, password)
   }
 
-  function logout() {
-    return signOut(auth)
+  async function logout() {
+    const { error } = await supabase.auth.signOut()
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user)
-      setLoading(false)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
     })
 
-    return unsubscribe
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
   }, [])
 
   const value = {
-    currentUser,
+    session,
     login,
     register,
     logout,
   }
-
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  )
+  // had !loading in brackets not sure why might be needed idk
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

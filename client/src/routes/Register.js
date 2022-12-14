@@ -13,14 +13,14 @@ import { useAuth } from '../context/AuthContext'
 
 export default function Register() {
   const navigate = useNavigate()
-  const { currentUser, register } = useAuth()
+  const { session, register } = useAuth()
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (currentUser) {
+    if (session) {
       navigate('/home')
     }
-  }, [currentUser, navigate])
+  }, [session, navigate])
 
   // form handling hook
   const form = useForm({
@@ -37,15 +37,27 @@ export default function Register() {
       confirmPassword: (value, values) =>
         value !== values.password ? 'Passwords did not match' : null,
       name: (value) => (value.length > 2 ? null : 'Invalid Name'),
-      number: (value) => (value !== null ? null : 'Must Enter Phone Number'),
+      number: (value) =>
+        value.replace(/\D/g, '').length === 10
+          ? null
+          : 'Must enter a valid phone number',
     },
   })
 
   async function handleSubmit(values) {
     try {
       setLoading(true)
-      await register(values.email, values.password)
-      navigate('/home')
+      const { data, error } = await register(
+        values.email,
+        values.password,
+        values.number,
+        values.name
+      )
+      if (error) {
+        console.log(error)
+      } else {
+        navigate('/home')
+      }
     } catch (e) {
       console.log(e)
     }
