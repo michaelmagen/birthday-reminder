@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from '@mantine/form'
 import {
   TextInput,
@@ -8,6 +8,7 @@ import {
   Box,
   PasswordInput,
   Title,
+  Text,
 } from '@mantine/core'
 import { useAuth } from '../context/AuthContext'
 
@@ -16,6 +17,7 @@ export default function Register() {
   const { session, register } = useAuth()
   const [loading, setLoading] = useState(false)
 
+  // send user to home page when logged in
   useEffect(() => {
     if (session) {
       navigate('/home')
@@ -44,6 +46,7 @@ export default function Register() {
     },
   })
 
+  // submit form and register account
   async function handleSubmit(values) {
     try {
       setLoading(true)
@@ -115,6 +118,10 @@ export default function Register() {
             </Button>
           </Group>
         </form>
+        <Text ta="center" mt="md">
+          Already have an account?<br></br>
+          <Link to={'/login'}>Log in here!</Link>
+        </Text>
       </Box>
     </>
   )

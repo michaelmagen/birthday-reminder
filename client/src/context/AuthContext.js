@@ -12,7 +12,6 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState()
-  //const [loading, setLoading] = useState(true)
 
   async function register(email, password, phone, fullName) {
     const { data, error } = await supabase.auth.signUp({
@@ -29,14 +28,22 @@ export function AuthProvider({ children }) {
     return { data, error }
   }
 
-  function login(email, password) {
-    //return signInWithEmailAndPassword(auth, email, password)
+  async function login(email, password) {
+    const { data } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    })
+    // if the data returned is null, error while loggin in
+    const error = data.user === null
+    return error
   }
 
   async function logout() {
     const { error } = await supabase.auth.signOut()
+    return error
   }
 
+  // retrieve session and update session validity
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
