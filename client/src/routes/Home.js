@@ -6,13 +6,11 @@ import {
   TextInput,
   Button,
   Group,
-  Box,
   Title,
   Text,
   Select,
-  NumberInput,
+  Stack,
 } from '@mantine/core'
-import { DatePicker } from '@mantine/dates'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -31,14 +29,19 @@ export default function Home() {
     initialValues: {
       name: '',
       month: '',
-      day: null,
-      birthday: '',
+      day: '',
     },
     validate: {
-      name: (value) => (value.length > 0 ? null : 'Must Enter a Name!'),
-      day: (value) =>
-        value > 0 && value < 32 ? null : 'Day must be between 1 and 31.',
+      name: (value) => (value.length > 0 ? null : 'Must enter a mame!'),
+      month: (value) => (value.length > 0 ? null : 'Must pick a month'),
+      day: (value) => (value.length > 0 ? null : 'Must pick a day'),
     },
+    // convert the date from strign with suffix to number
+    transformValues: (values) => ({
+      name: values.name,
+      month: values.month,
+      day: values.day.match(/\d/g).join(''),
+    }),
   })
 
   // function that logs out a user and navigate to the login page
@@ -57,6 +60,41 @@ export default function Home() {
     form.reset()
   }
 
+  // data for day form select
+  const dayData = [
+    '1st',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+    '9th',
+    '10th',
+    '11th',
+    '12th',
+    '13th',
+    '14th',
+    '15th',
+    '16th',
+    '17th',
+    '18th',
+    '19th',
+    '20th',
+    '21st',
+    '22nd',
+    '23rd',
+    '24th',
+    '25th',
+    '26th',
+    '27th',
+    '28th',
+    '29th',
+    '30th',
+    '31st',
+  ]
+
   return (
     <>
       <button onClick={handleLogout}>log out</button>
@@ -72,42 +110,40 @@ export default function Home() {
           placeholder="Person Name"
           {...form.getInputProps('name')}
         />
-        <Select
-          placeholder="Month"
-          label="Birthday Month"
-          searchable
-          nothingFound="No options"
-          data={[
-            'January',
-            'Febuary',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December',
-          ]}
-          {...form.getInputProps('month')}
-        />
-        <NumberInput
-          placeholder="Day"
-          label="Day of Month"
-          min={1}
-          max={31}
-          {...form.getInputProps('day')}
-        />
-        <DatePicker
-          placeholder="Birthday"
-          label="Birthday"
-          description="When is their birthday this year?"
-          allowLevelChange={false}
-          firstDayOfWeek="sunday"
-          {...form.getInputProps('day')}
-        />
+        <Stack align="center" spacing="xs">
+          <Text fz="xl">Birthday</Text>
+          <Group>
+            <Select
+              placeholder="Month"
+              label="Month"
+              searchable
+              nothingFound="No options"
+              data={[
+                'January',
+                'Febuary',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December',
+              ]}
+              {...form.getInputProps('month')}
+            />
+            <Select
+              placeholder="Day"
+              label="Day"
+              searchable
+              nothingFound="No Options"
+              data={dayData}
+              {...form.getInputProps('day')}
+            />
+          </Group>
+        </Stack>
         <Button loading={formLoading} type="sumbit">
           Submit
         </Button>
