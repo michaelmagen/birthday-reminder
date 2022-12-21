@@ -2,6 +2,7 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useForm } from '@mantine/form'
+import birthdayService from '../services/bday'
 import {
   TextInput,
   Button,
@@ -39,8 +40,10 @@ export default function Home() {
     // convert the date from strign with suffix to number
     transformValues: (values) => ({
       name: values.name,
-      month: values.month,
-      day: values.day.match(/\d/g).join(''),
+      // transform month string to number (jan -> 1)
+      month: new Date(values.month + '-1-01').getMonth() + 1,
+      // convert day to int and remove suffix
+      day: parseInt(values.day.match(/\d/g).join('')),
     }),
   })
 
@@ -57,6 +60,8 @@ export default function Home() {
   // submit the birthday form to the database
   function handleSubmit(values) {
     console.log('the values of the form', values)
+    const res = birthdayService.addBirthday(values)
+    console.log(res)
     form.reset()
   }
 
