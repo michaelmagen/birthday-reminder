@@ -64,6 +64,8 @@ export function AuthProvider({ children }) {
         document.cookie = `my-access-token=${session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`
         document.cookie = `my-refresh-token=${session.refresh_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`
       }
+
+      setSession(session)
     })
   }, [])
 

@@ -15,7 +15,7 @@ import {
 
 export default function Home() {
   const navigate = useNavigate()
-  const { session, logout } = useAuth()
+  const { session } = useAuth()
   const [formLoading, setFormLoading] = useState(false)
 
   // if user not logged in, send them to login page
@@ -47,15 +47,15 @@ export default function Home() {
     }),
   })
 
-  // function that logs out a user and navigate to the login page
-  async function handleLogout() {
-    try {
-      await logout()
-      navigate('/login')
-    } catch (e) {
-      console.log(e)
-    }
-  }
+  // // function that logs out a user and navigate to the login page
+  // async function handleLogout() {
+  //   try {
+  //     await logout()
+  //     navigate('/login')
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
 
   // submit the birthday form to the database
   function handleSubmit(values) {
@@ -102,7 +102,7 @@ export default function Home() {
 
   return (
     <>
-      <button onClick={handleLogout}>log out</button>
+      {/* <button onClick={handleLogout}>log out</button> */}
       <Title>Add a Birthday</Title>
       <Text>
         For every birthday added, we will send you a text reminder about that
