@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Login from './routes/Login'
 import Home from './routes/Home'
@@ -27,7 +27,7 @@ export default function App() {
           <BrowserRouter>
             <SiteHeader />
             <Link to={'/login'}>Login</Link>
-            <Link to={'/home'}>Home</Link>
+            <Link to={'/'}>Home</Link>
             <Link to={'/register'}>register</Link>
 
             <Routes>
@@ -36,11 +36,7 @@ export default function App() {
                 element={<Login />}
                 errorElement={<ErrorPage />}
               />
-              <Route
-                path="/home"
-                element={<Home />}
-                errorElement={<ErrorPage />}
-              />
+              <Route path="/" element={<Home />} errorElement={<ErrorPage />} />
               <Route
                 path="/register"
                 element={<Register />}

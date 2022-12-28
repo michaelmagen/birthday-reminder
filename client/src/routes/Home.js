@@ -15,15 +15,16 @@ import {
 
 export default function Home() {
   const navigate = useNavigate()
-  const { session } = useAuth()
+  const { session, loadingSession } = useAuth()
   const [formLoading, setFormLoading] = useState(false)
 
   // if user not logged in, send them to login page
   useEffect(() => {
-    if (!session) {
+    // checks that sesssion not available, and that session is done being fetched
+    if (!session && !loadingSession) {
       navigate('/login')
     }
-  }, [session, navigate])
+  }, [session, navigate, loadingSession])
 
   // birthday adding form handling hook
   const form = useForm({

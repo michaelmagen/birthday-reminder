@@ -20,7 +20,7 @@ export default function Login() {
   // send user to home page when logged in
   useEffect(() => {
     if (session) {
-      navigate('/home')
+      navigate('/')
     }
   }, [session, navigate])
 
@@ -46,7 +46,7 @@ export default function Login() {
       if (error) {
         console.log('can not login')
       } else {
-        navigate('/home')
+        navigate('/')
       }
     } finally {
       setLoading(false)

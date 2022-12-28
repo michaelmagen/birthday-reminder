@@ -20,7 +20,7 @@ export default function Register() {
   // send user to home page when logged in
   useEffect(() => {
     if (session) {
-      navigate('/home')
+      navigate('/')
     }
   }, [session, navigate])
 
@@ -59,7 +59,7 @@ export default function Register() {
       if (error) {
         console.log(error)
       } else {
-        navigate('/home')
+        navigate('/')
       }
     } catch (e) {
       console.log(e)

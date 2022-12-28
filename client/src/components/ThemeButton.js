@@ -1,18 +1,22 @@
-import { Button, ActionIcon, useMantineColorScheme } from '@mantine/core'
+import { Tooltip, ActionIcon, useMantineColorScheme } from '@mantine/core'
+import { IconSun, IconMoonStars } from '@tabler/icons'
 
 export default function ThemeButton() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme()
   const dark = colorScheme === 'dark'
 
   return (
-    <Button
-      variant="outline"
-      color={dark ? 'yellow' : 'blue'}
-      onClick={() => toggleColorScheme()}
-      title="Toggle color scheme"
-      size="sm"
-    >
-      {dark ? 'Light' : 'Dark'}
-    </Button>
+    <Tooltip label="Toggle theme">
+      <ActionIcon
+        variant="light"
+        color={dark ? 'yellow' : 'blue'}
+        onClick={() => toggleColorScheme()}
+        title="Toggle theme"
+        size="lg"
+        radius="md"
+      >
+        {dark ? <IconSun /> : <IconMoonStars />}
+      </ActionIcon>
+    </Tooltip>
   )
 }

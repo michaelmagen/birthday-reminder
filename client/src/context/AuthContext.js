@@ -12,6 +12,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState()
+  const [loadingSession, setLoadingSession] = useState(true)
 
   async function register(email, password, phone, fullName) {
     const { data, error } = await supabase.auth.signUp({
@@ -47,6 +48,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
+      setLoadingSession(false)
     })
 
     // supabase.auth.onAuthStateChange((_event, session) => {
@@ -71,6 +73,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     session,
+    loadingSession,
     login,
     register,
     logout,
