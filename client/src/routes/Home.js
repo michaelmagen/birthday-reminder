@@ -40,7 +40,6 @@ export default function Home() {
   const { session, loadingSession } = useAuth()
   const [formLoading, setFormLoading] = useState(false)
   const [displayDate, setDisplayDate] = useState(new Date())
-  console.log(displayDate)
   const isMobile = useMediaQuery('(max-width: 755px)')
   const { classes, cx } = useStyles()
 
