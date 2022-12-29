@@ -20,7 +20,18 @@ export default function App() {
         toggleColorScheme={toggleColorScheme}
       >
         <MantineProvider
-          theme={{ colorScheme }}
+          theme={{
+            colorScheme,
+            components: {
+              Button: {
+                defaultProps: {
+                  color: colorScheme === 'dark' ? 'green' : 'blue',
+                  radius: 'md',
+                  variant: 'light',
+                },
+              },
+            },
+          }}
           withGlobalStyles
           withNormalizeCSS
         >

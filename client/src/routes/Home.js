@@ -6,12 +6,16 @@ import birthdayService from '../services/bday'
 import {
   TextInput,
   Button,
-  Group,
+  Space,
   Title,
   Text,
   Select,
-  Stack,
+  Center,
+  Paper,
+  Container,
+  Flex,
 } from '@mantine/core'
+import data from '../config/data'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -34,7 +38,7 @@ export default function Home() {
       day: '',
     },
     validate: {
-      name: (value) => (value.length > 0 ? null : 'Must enter a mame!'),
+      name: (value) => (value.length > 0 ? null : 'Must enter a name!'),
       month: (value) => (value.length > 0 ? null : 'Must pick a month'),
       day: (value) => (value.length > 0 ? null : 'Must pick a day'),
     },
@@ -48,112 +52,59 @@ export default function Home() {
     }),
   })
 
-  // // function that logs out a user and navigate to the login page
-  // async function handleLogout() {
-  //   try {
-  //     await logout()
-  //     navigate('/login')
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
-
   // submit the birthday form to the database
   function handleSubmit(values) {
+    setFormLoading(true)
     console.log('the values of the form', values)
     const res = birthdayService.addBirthday(values)
     console.log(res)
     form.reset()
+    setFormLoading(false)
   }
-
-  // data for day form select
-  const dayData = [
-    '1st',
-    '2nd',
-    '3rd',
-    '4th',
-    '5th',
-    '6th',
-    '7th',
-    '8th',
-    '9th',
-    '10th',
-    '11th',
-    '12th',
-    '13th',
-    '14th',
-    '15th',
-    '16th',
-    '17th',
-    '18th',
-    '19th',
-    '20th',
-    '21st',
-    '22nd',
-    '23rd',
-    '24th',
-    '25th',
-    '26th',
-    '27th',
-    '28th',
-    '29th',
-    '30th',
-    '31st',
-  ]
 
   return (
     <>
-      {/* <button onClick={handleLogout}>log out</button> */}
-      <Title>Add a Birthday</Title>
-      <Text>
-        For every birthday added, we will send you a text reminder about that
-        persons birthday!
-      </Text>
-      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-        <TextInput
-          mt="sm"
-          label="Name"
-          placeholder="Person Name"
-          {...form.getInputProps('name')}
-        />
-        <Stack align="center" spacing="xs">
-          <Text fz="xl">Birthday</Text>
-          <Group>
-            <Select
-              placeholder="Month"
-              label="Month"
-              searchable
-              nothingFound="No options"
-              data={[
-                'January',
-                'Febuary',
-                'March',
-                'April',
-                'May',
-                'June',
-                'July',
-                'August',
-                'September',
-                'October',
-                'November',
-                'December',
-              ]}
-              {...form.getInputProps('month')}
-            />
-            <Select
-              placeholder="Day"
-              label="Day"
-              searchable
-              nothingFound="No Options"
-              data={dayData}
-              {...form.getInputProps('day')}
-            />
-          </Group>
-        </Stack>
-        <Button loading={formLoading} type="sumbit">
-          Submit
-        </Button>
-      </form>
+      <Container>
+        <Paper withBorder shadow="lg" p="md" radius="md">
+          <Title order={3}>Add a Birthday</Title>
+          <Text fz="xs">Get a reminder text for every person's birthday!</Text>
+          <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+            <Flex
+              justify="space-around"
+              direction={{ base: 'column', sm: 'row' }}
+              gap="xs"
+            >
+              <TextInput
+                label="Name"
+                placeholder="Person Name"
+                {...form.getInputProps('name')}
+              />
+              <Select
+                placeholder="Month"
+                label="Month"
+                searchable
+                nothingFound="No options"
+                data={data.month}
+                {...form.getInputProps('month')}
+              />
+              <Select
+                placeholder="Day"
+                label="Day"
+                searchable
+                nothingFound="No Options"
+                data={data.day}
+                {...form.getInputProps('day')}
+              />
+            </Flex>
+            <Space h="md" />
+            <Center>
+              <Button size="md" loading={formLoading} type="submit">
+                Submit
+              </Button>
+            </Center>
+          </form>
+        </Paper>
+      </Container>
     </>
   )
 }
