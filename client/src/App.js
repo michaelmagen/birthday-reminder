@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Login from './routes/Login'
@@ -7,9 +6,15 @@ import ErrorPage from './ErrorPage'
 import Register from './routes/Register'
 import SiteHeader from './components/Header'
 import { MantineProvider, ColorSchemeProvider } from '@mantine/core'
+import { useLocalStorage } from '@mantine/hooks'
 
 export default function App() {
-  const [colorScheme, setColorScheme] = useState('light')
+  // sets the color scheme, saves color scheme in local storage
+  const [colorScheme, setColorScheme] = useLocalStorage({
+    key: 'mantine-color-scheme',
+    defaultValue: 'light',
+    getInitialValueInEffect: true,
+  })
   const toggleColorScheme = (value) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'))
 
