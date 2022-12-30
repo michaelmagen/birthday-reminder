@@ -15,9 +15,17 @@ const removeBirthday = async (id) => {
   return response.data
 }
 
+const getBirthdays = async (month, day) => {
+  const response = await axios.get(`${baseUrl}/${month}/${day}`, {
+    withCredentials: true,
+  })
+  return response.data
+}
+
 const birthdayService = {
   addBirthday,
   removeBirthday,
+  getBirthdays,
 }
 
 export default birthdayService

@@ -7,6 +7,7 @@ import { DatePicker } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { IconCalendar } from '@tabler/icons'
 import BirthdayFrom from '../components/BirthdayForm'
+import birthdayService from '../services/bday'
 
 // styles for the calendar displayed for date selection
 const useStyles = createStyles((theme) => ({
@@ -25,9 +26,9 @@ const useStyles = createStyles((theme) => ({
 export default function Home() {
   const navigate = useNavigate()
   const { session, loadingSession } = useAuth()
-  const [displayDate, setDisplayDate] = useState(new Date())
   const isMobile = useMediaQuery('(max-width: 755px)')
   const { classes, cx } = useStyles()
+  const [birthdayData, setBirthdayData] = useState()
 
   // if user not logged in, send them to login page
   useEffect(() => {
@@ -36,6 +37,19 @@ export default function Home() {
       navigate('/login')
     }
   }, [session, navigate, loadingSession])
+
+  async function handleDisplayData(date) {
+    if (date === null) {
+      return
+    }
+    // add one since indexed at 0
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+
+    const res = await birthdayService.getBirthdays(month, day)
+    setBirthdayData(res)
+    console.log(res)
+  }
 
   return (
     <>
@@ -57,8 +71,7 @@ export default function Home() {
             }
             styles={{ root: { width: '15rem' } }}
             icon={<IconCalendar size={16} />}
-            value={displayDate}
-            onChange={setDisplayDate}
+            onChange={(value) => handleDisplayData(value)}
           />
         </Flex>
       </Container>

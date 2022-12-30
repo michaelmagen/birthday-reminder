@@ -59,7 +59,6 @@ export default function App() {
                 errorElement={<ErrorPage />}
               />
             </Routes>
-            <div>This is a footer from app.js</div>
           </BrowserRouter>
         </MantineProvider>
       </ColorSchemeProvider>

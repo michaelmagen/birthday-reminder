@@ -15,7 +15,7 @@ const authorizeRequest = async (req, res, next) => {
     return res.status(400).json({ error: 'User is not authenticated' }).end()
   }
 
-  // retrieve user id
+  // retrieve user and attach to req
   const user_data = await supabase.auth.getUser()
 
   if (user_data.error) {
