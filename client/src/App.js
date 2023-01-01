@@ -42,9 +42,6 @@ export default function App() {
         >
           <BrowserRouter>
             <SiteHeader />
-            <Link to={'/login'}>Login</Link>
-            <Link to={'/'}>Home</Link>
-            <Link to={'/register'}>register</Link>
 
             <Routes>
               <Route
