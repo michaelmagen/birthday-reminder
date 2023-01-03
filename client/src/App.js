@@ -7,6 +7,10 @@ import Register from './routes/Register'
 import SiteHeader from './components/Header'
 import { MantineProvider, ColorSchemeProvider } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
+// Create a client
+const queryClient = new QueryClient()
 
 export default function App() {
   // sets the color scheme, saves color scheme in local storage
@@ -20,45 +24,51 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <ColorSchemeProvider
-        colorScheme={colorScheme}
-        toggleColorScheme={toggleColorScheme}
-      >
-        <MantineProvider
-          theme={{
-            colorScheme,
-            components: {
-              Button: {
-                defaultProps: {
-                  color: colorScheme === 'dark' ? 'green' : 'blue',
-                  radius: 'md',
-                  variant: 'light',
+      <QueryClientProvider client={queryClient}>
+        <ColorSchemeProvider
+          colorScheme={colorScheme}
+          toggleColorScheme={toggleColorScheme}
+        >
+          <MantineProvider
+            theme={{
+              colorScheme,
+              components: {
+                Button: {
+                  defaultProps: {
+                    color: colorScheme === 'dark' ? 'green' : 'blue',
+                    radius: 'md',
+                    variant: 'light',
+                  },
                 },
               },
-            },
-          }}
-          withGlobalStyles
-          withNormalizeCSS
-        >
-          <BrowserRouter>
-            <SiteHeader />
+            }}
+            withGlobalStyles
+            withNormalizeCSS
+          >
+            <BrowserRouter>
+              <SiteHeader />
 
-            <Routes>
-              <Route
-                path="/login"
-                element={<Login />}
-                errorElement={<ErrorPage />}
-              />
-              <Route path="/" element={<Home />} errorElement={<ErrorPage />} />
-              <Route
-                path="/register"
-                element={<Register />}
-                errorElement={<ErrorPage />}
-              />
-            </Routes>
-          </BrowserRouter>
-        </MantineProvider>
-      </ColorSchemeProvider>
+              <Routes>
+                <Route
+                  path="/login"
+                  element={<Login />}
+                  errorElement={<ErrorPage />}
+                />
+                <Route
+                  path="/"
+                  element={<Home />}
+                  errorElement={<ErrorPage />}
+                />
+                <Route
+                  path="/register"
+                  element={<Register />}
+                  errorElement={<ErrorPage />}
+                />
+              </Routes>
+            </BrowserRouter>
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </QueryClientProvider>
     </AuthProvider>
   )
 }

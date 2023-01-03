@@ -15,8 +15,12 @@ const removeBirthday = async (id) => {
   return response.data
 }
 
-const getBirthdays = async (month, day) => {
-  const response = await axios.get(`${baseUrl}/${month}/${day}`, {
+const getBirthdays = async () => {
+  // const response = await axios.get(`${baseUrl}/${month}/${day}`, {
+  //   withCredentials: true,
+  // })
+  // return response.data
+  const response = await axios.get(baseUrl, {
     withCredentials: true,
   })
   return response.data

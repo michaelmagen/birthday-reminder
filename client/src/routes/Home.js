@@ -1,7 +1,15 @@
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { Container, Flex, createStyles, Title, Space } from '@mantine/core'
+import {
+  Container,
+  Flex,
+  createStyles,
+  Title,
+  Space,
+  Select,
+  LoadingOverlay,
+} from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { DatePicker } from '@mantine/dates'
 import dayjs from 'dayjs'
@@ -9,6 +17,8 @@ import { IconCalendar } from '@tabler/icons'
 import BirthdayForm from '../components/BirthdayForm'
 import birthdayService from '../services/bday'
 import BirthdayList from '../components/BirthdayList'
+import { useQuery } from 'react-query'
+import monthData from '../config/data'
 
 // styles for the calendar displayed for date selection
 const useStyles = createStyles((theme) => ({
@@ -25,8 +35,12 @@ export default function Home() {
   const { session, loadingSession } = useAuth()
   const isMobile = useMediaQuery('(max-width: 755px)')
   const { classes, cx } = useStyles()
-  const [birthdayData, setBirthdayData] = useState(null)
-  const [fetchingBirthdays, setFetchingBirthdays] = useState(false)
+  const [displayedBirthday, setDisplayedBirthday] = useState(null)
+  const [monthChosen, setMonthChosen] = useState(null)
+  const { isLoading, isError, data, error } = useQuery(
+    'birthdays',
+    birthdayService.getBirthdays
+  )
 
   // if user not logged in, send them to login page
   useEffect(() => {
@@ -36,19 +50,21 @@ export default function Home() {
     }
   }, [session, navigate, loadingSession])
 
-  async function handleDisplayData(date) {
-    if (date === null) {
-      return
+  // change display data when user changes it,
+  // or when the data is invalidated (something deleted or updated)
+  useEffect(() => {
+    async function handleDisplayData() {
+      if (monthChosen === null) {
+        return
+      }
+      // convert the month string to corresponding number for month
+      const month = monthData.month.indexOf(monthChosen) + 1
+      const birthdaysInMointh = data.filter((entry) => entry.month === month)
+      setDisplayedBirthday(birthdaysInMointh)
     }
-    setFetchingBirthdays(true)
-    // add one since indexed at 0
-    const month = date.getMonth() + 1
-    const day = date.getDate()
 
-    const res = await birthdayService.getBirthdays(month, day)
-    setBirthdayData(res)
-    setFetchingBirthdays(false)
-  }
+    handleDisplayData()
+  }, [monthChosen, data])
 
   return (
     <>
@@ -58,8 +74,9 @@ export default function Home() {
         <Title order={1} my="xs" align="center">
           Current Birthday Reminders
         </Title>
-        <Flex justify="center" align="center">
-          <DatePicker
+        <Flex justify="center" align="center" mb="md">
+          <LoadingOverlay visible={isLoading} overlayBlur={2} />
+          {/* <DatePicker
             dropdownType={isMobile ? 'modal' : 'popover'}
             placeholder="Pick date"
             label="Select date"
@@ -75,9 +92,19 @@ export default function Home() {
             icon={<IconCalendar size={16} />}
             onChange={(value) => handleDisplayData(value)}
             mb="sm"
+          /> */}
+          <Select
+            placeholder="Month"
+            label="Month"
+            searchable
+            nothingFound="No options"
+            data={monthData.month}
+            icon={<IconCalendar size={16} />}
+            value={monthChosen}
+            onChange={(value) => setMonthChosen(value)}
           />
         </Flex>
-        <BirthdayList birthdayData={birthdayData} loading={fetchingBirthdays} />
+        <BirthdayList birthdayData={displayedBirthday} />
       </Container>
       <Space h="xl" />
     </>

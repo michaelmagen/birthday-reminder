@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Skeleton,
   List,
@@ -9,10 +10,25 @@ import {
   Text,
   Center,
   Paper,
+  Table,
 } from '@mantine/core'
-import { IconUser, IconTrash } from '@tabler/icons'
+import { IconTrash } from '@tabler/icons'
+import birthdayService from '../services/bday'
+import { useMutation, useQueryClient } from 'react-query'
 
 export default function BirthdayList({ birthdayData, loading }) {
+  const queryClient = useQueryClient()
+  const mutation = useMutation(
+    (id) => {
+      return birthdayService.removeBirthday(id)
+    },
+    {
+      onSuccess: (data, variables, context) => {
+        queryClient.invalidateQueries('birthdays')
+      },
+    }
+  )
+
   // loading skeleton while the data is being fetched
   if (loading) {
     return (
@@ -27,7 +43,7 @@ export default function BirthdayList({ birthdayData, loading }) {
   if (birthdayData === null) {
     return (
       <Text align="center" fz="xl">
-        Select a date to show the birthdays on that date!
+        Select a month to show that month's birthdays!
       </Text>
     )
   }
@@ -36,14 +52,24 @@ export default function BirthdayList({ birthdayData, loading }) {
   if (birthdayData.length === 0) {
     return (
       <Text align="center" fz="xl">
-        No birthdays on this day!
+        No birthdays on this month!
       </Text>
     )
+  }
+  // function key for sorting data by day in ascending order
+  function sortByDay(a, b) {
+    let comparison = 0
+    if (a.day > b.day) {
+      comparison = 1
+    } else if (a.day < b.day) {
+      comparison = -1
+    }
+    return comparison
   }
 
   return (
     <>
-      {birthdayData.map((birthdayEntry) => (
+      {/* {birthdayData.sort(sortByDay).map((birthdayEntry) => (
         <Center key={birthdayEntry.id}>
           <Paper
             shadow="xs"
@@ -55,14 +81,49 @@ export default function BirthdayList({ birthdayData, loading }) {
             withBorder
           >
             <Group position="apart">
-              {birthdayEntry.name}
-              <ActionIcon variant="light" color="red" radius="md">
+              {birthdayEntry.day}: {birthdayEntry.name}
+              <ActionIcon
+                variant="light"
+                color="red"
+                radius="md"
+                //onClick={() => handleDeleteButtonClick(birthdayEntry.id)}
+              >
                 <IconTrash />
               </ActionIcon>
             </Group>
           </Paper>
         </Center>
-      ))}
+      ))} */}
+      <Center>
+        <Table horizontalSpacing="lg" w={850} highlightOnHover fontSize="xl">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Name</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {birthdayData.sort(sortByDay).map((birthdayEntry) => (
+              <tr key={birthdayEntry.id}>
+                <td>{birthdayEntry.day}</td>
+                <td>{birthdayEntry.name}</td>
+                <td>
+                  {' '}
+                  <ActionIcon
+                    variant="light"
+                    color="red"
+                    radius="md"
+                    onClick={() => mutation.mutate(birthdayEntry.id)}
+                  >
+                    <IconTrash />
+                  </ActionIcon>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Center>
     </>
   )
 }

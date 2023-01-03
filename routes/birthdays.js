@@ -40,6 +40,22 @@ router.post('/', async (req, res) => {
 
 // TODO: TEST THESE ROUTES
 
+router.get('/', async (req, res) => {
+  const user_id = req.user.data.user.id
+
+  const { data, error } = await supabase
+    .from('birthdays')
+    .select()
+    .eq('user_id', user_id)
+
+  if (error) {
+    console.log(error)
+    return res.status(400).json(error).end()
+  }
+  console.log('getting all data of user')
+  // if no users return an empty array
+  res.json(data).end()
+})
 // get birthdays on month/day from specific user
 router.get('/:month/:day', async (req, res) => {
   // ensure that month and date are nums and in proper range
@@ -97,7 +113,7 @@ router.delete('/:id', async (req, res) => {
     return res.status(400).json({ error: 'Unable to delete birthday' }).end()
   }
 
-  res.send().end()
+  res.status(204).end()
 })
 
 module.exports = router
