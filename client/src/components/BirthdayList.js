@@ -1,44 +1,44 @@
 import { useState } from 'react'
 import {
-  Skeleton,
-  List,
-  ThemeIcon,
   ActionIcon,
   Group,
   Space,
-  Divider,
+  Button,
   Text,
   Center,
-  Paper,
+  Modal,
   Table,
 } from '@mantine/core'
 import { IconTrash } from '@tabler/icons'
 import birthdayService from '../services/bday'
 import { useMutation, useQueryClient } from 'react-query'
 
-export default function BirthdayList({ birthdayData, loading }) {
+export default function BirthdayList({ birthdayData }) {
+  const [openPopup, setOpenPopup] = useState(false)
+  const [idToDelete, setIdToDelete] = useState(null)
+  const [loading, setLoading] = useState(false)
   const queryClient = useQueryClient()
+  // mutation for deleting birthday reminders
   const mutation = useMutation(
     (id) => {
       return birthdayService.removeBirthday(id)
     },
     {
-      onSuccess: (data, variables, context) => {
-        queryClient.invalidateQueries('birthdays')
+      onError: () => {
+        //TODO: add an alert telling the user about the error
+        console.log('error happened unable to delete item')
+      },
+      onSuccess: async (data, variables, context) => {
+        // refetch the data now that we added something
+        await queryClient.invalidateQueries('birthdays')
+      },
+      onSettled: (data, error, variables, context) => {
+        // close the popup and refresh states
+        setOpenPopup(false)
+        setLoading(false)
       },
     }
   )
-
-  // loading skeleton while the data is being fetched
-  if (loading) {
-    return (
-      <>
-        <Skeleton height={8} radius="xl" />
-        <Skeleton height={8} mt={6} radius="xl" />
-        <Skeleton height={8} mt={6} width="70%" radius="xl" />
-      </>
-    )
-  }
 
   if (birthdayData === null) {
     return (
@@ -48,7 +48,7 @@ export default function BirthdayList({ birthdayData, loading }) {
     )
   }
 
-  // there are no birthdays on the selected day
+  // there are no birthdays on the selected month
   if (birthdayData.length === 0) {
     return (
       <Text align="center" fz="xl">
@@ -56,7 +56,8 @@ export default function BirthdayList({ birthdayData, loading }) {
       </Text>
     )
   }
-  // function key for sorting data by day in ascending order
+
+  // key for sorting data by day in ascending order
   function sortByDay(a, b) {
     let comparison = 0
     if (a.day > b.day) {
@@ -69,31 +70,6 @@ export default function BirthdayList({ birthdayData, loading }) {
 
   return (
     <>
-      {/* {birthdayData.sort(sortByDay).map((birthdayEntry) => (
-        <Center key={birthdayEntry.id}>
-          <Paper
-            shadow="xs"
-            radius="xl"
-            px="xl"
-            py="sm"
-            my=".4rem"
-            w={850}
-            withBorder
-          >
-            <Group position="apart">
-              {birthdayEntry.day}: {birthdayEntry.name}
-              <ActionIcon
-                variant="light"
-                color="red"
-                radius="md"
-                //onClick={() => handleDeleteButtonClick(birthdayEntry.id)}
-              >
-                <IconTrash />
-              </ActionIcon>
-            </Group>
-          </Paper>
-        </Center>
-      ))} */}
       <Center>
         <Table horizontalSpacing="lg" w={850} highlightOnHover fontSize="xl">
           <thead>
@@ -114,7 +90,10 @@ export default function BirthdayList({ birthdayData, loading }) {
                     variant="light"
                     color="red"
                     radius="md"
-                    onClick={() => mutation.mutate(birthdayEntry.id)}
+                    onClick={() => {
+                      setOpenPopup(true)
+                      setIdToDelete(birthdayEntry.id)
+                    }}
                   >
                     <IconTrash />
                   </ActionIcon>
@@ -123,6 +102,30 @@ export default function BirthdayList({ birthdayData, loading }) {
             ))}
           </tbody>
         </Table>
+        {/* Modal only displayed when openPopup state is set to true */}
+        <Modal
+          opened={openPopup}
+          onClose={() => setOpenPopup(false)}
+          title="Are you sure you want to delete this reminder?"
+        >
+          <Space h="sm" />
+          <Group position="right" mr="md">
+            <Button color="gray" onClick={() => setOpenPopup(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="filled"
+              color="red"
+              onClick={() => {
+                setLoading(true)
+                mutation.mutate(idToDelete)
+              }}
+              loading={loading}
+            >
+              Delete
+            </Button>
+          </Group>
+        </Modal>
       </Center>
     </>
   )
