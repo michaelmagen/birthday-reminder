@@ -44,6 +44,13 @@ export default function Register() {
           ? null
           : 'Must enter a valid phone number',
     },
+    transformValues: (values) => ({
+      email: values.email,
+      password: values.password,
+      // remove any non number characters from string
+      number: values.number.replace(/\D/g, ''),
+      name: values.name,
+    }),
   })
 
   // submit form and register account
