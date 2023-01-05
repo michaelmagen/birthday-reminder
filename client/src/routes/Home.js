@@ -4,15 +4,11 @@ import { useEffect, useState } from 'react'
 import {
   Container,
   Flex,
-  createStyles,
   Title,
   Space,
   Select,
   LoadingOverlay,
 } from '@mantine/core'
-import { useMediaQuery } from '@mantine/hooks'
-import { DatePicker } from '@mantine/dates'
-import dayjs from 'dayjs'
 import { IconCalendar } from '@tabler/icons'
 import BirthdayForm from '../components/BirthdayForm'
 import birthdayService from '../services/bday'
@@ -20,21 +16,9 @@ import BirthdayList from '../components/BirthdayList'
 import { useQuery } from 'react-query'
 import monthData from '../config/data'
 
-// styles for the calendar displayed for date selection
-const useStyles = createStyles((theme) => ({
-  weekend: {
-    color:
-      theme.colorScheme === 'light'
-        ? `${theme.colors.gray[7]} !important`
-        : `${theme.colors.dark[0]} !important`,
-  },
-}))
-
 export default function Home() {
   const navigate = useNavigate()
   const { session, loadingSession } = useAuth()
-  const isMobile = useMediaQuery('(max-width: 755px)')
-  const { classes, cx } = useStyles()
   const [displayedBirthday, setDisplayedBirthday] = useState(null)
   const [monthChosen, setMonthChosen] = useState(null)
   const { isLoading, isError, data, error } = useQuery(
