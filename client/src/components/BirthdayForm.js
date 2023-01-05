@@ -16,6 +16,7 @@ import { useMediaQuery } from '@mantine/hooks'
 import { DatePicker } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { IconCalendar } from '@tabler/icons'
+import { useMutation, useQueryClient } from 'react-query'
 
 // styles for the calendar displayed for date selection
 const useStyles = createStyles((theme) => ({
@@ -31,6 +32,28 @@ export default function BirthdayFrom() {
   const [formLoading, setFormLoading] = useState(false)
   const isMobile = useMediaQuery('(max-width: 755px)')
   const { classes, cx } = useStyles()
+  const queryClient = useQueryClient()
+  // mutation for handling creating birthdays
+  const mutation = useMutation(
+    (birthday) => {
+      return birthdayService.addBirthday(birthday)
+    },
+    {
+      onError: () => {
+        //TODO: add an alert telling the user about the error
+        console.log('error happened unable to delete item')
+      },
+      onSuccess: async (data, variables, context) => {
+        // refetch the data now that we added something
+        await queryClient.invalidateQueries('birthdays')
+      },
+      onSettled: (data, error, variables, context) => {
+        // close the popup and refresh states
+        form.reset()
+        setFormLoading(false)
+      },
+    }
+  )
 
   // from handling hook for adding birthdays
   const form = useForm({
@@ -51,20 +74,11 @@ export default function BirthdayFrom() {
     }),
   })
 
-  // submit the birthday form to the database
-  async function handleSubmit(values) {
-    setFormLoading(true)
-    console.log('the values of the form', values)
-    await birthdayService.addBirthday(values)
-    form.reset()
-    setFormLoading(false)
-  }
-
   return (
     <Paper withBorder shadow="lg" p="md" radius="md">
       <Title order={3}>Add a Birthday</Title>
       <Text fz="xs">Get a reminder text for every person's birthday!</Text>
-      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+      <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
         <Flex
           justify="space-around"
           direction={{ base: 'column', sm: 'row' }}
@@ -96,7 +110,12 @@ export default function BirthdayFrom() {
         </Flex>
         <Space h="md" />
         <Center>
-          <Button size="md" loading={formLoading} type="submit">
+          <Button
+            size="md"
+            loading={formLoading}
+            type="submit"
+            onClick={() => setFormLoading(true)}
+          >
             Submit
           </Button>
         </Center>
