@@ -76,23 +76,6 @@ export default function Home() {
         </Title>
         <Flex justify="center" align="center" mb="md">
           <LoadingOverlay visible={isLoading} overlayBlur={2} />
-          {/* <DatePicker
-            dropdownType={isMobile ? 'modal' : 'popover'}
-            placeholder="Pick date"
-            label="Select date"
-            firstDayOfWeek="sunday"
-            minDate={dayjs(new Date()).startOf('year').toDate()}
-            maxDate={dayjs(new Date()).endOf('year').toDate()}
-            dayClassName={(date, modifiers) =>
-              cx({
-                [classes.weekend]: modifiers.weekend && !modifiers.outside,
-              })
-            }
-            styles={{ root: { width: '15rem' } }}
-            icon={<IconCalendar size={16} />}
-            onChange={(value) => handleDisplayData(value)}
-            mb="sm"
-          /> */}
           <Select
             placeholder="Month"
             label="Month"
@@ -100,6 +83,7 @@ export default function Home() {
             nothingFound="No options"
             data={monthData.month}
             icon={<IconCalendar size={16} />}
+            size="lg"
             value={monthChosen}
             onChange={(value) => setMonthChosen(value)}
           />

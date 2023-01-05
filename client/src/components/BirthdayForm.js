@@ -7,45 +7,55 @@ import {
   Space,
   Title,
   Text,
-  Select,
+  createStyles,
   Center,
   Paper,
   Flex,
 } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
+import { DatePicker } from '@mantine/dates'
+import dayjs from 'dayjs'
+import { IconCalendar } from '@tabler/icons'
 
-import data from '../config/data'
+// styles for the calendar displayed for date selection
+const useStyles = createStyles((theme) => ({
+  weekend: {
+    color:
+      theme.colorScheme === 'light'
+        ? `${theme.colors.gray[7]} !important`
+        : `${theme.colors.dark[0]} !important`,
+  },
+}))
 
 export default function BirthdayFrom() {
   const [formLoading, setFormLoading] = useState(false)
+  const isMobile = useMediaQuery('(max-width: 755px)')
+  const { classes, cx } = useStyles()
 
   // from handling hook for adding birthdays
   const form = useForm({
     initialValues: {
       name: '',
-      month: '',
-      day: '',
+      date: null,
     },
     validate: {
       name: (value) => (value.length > 0 ? null : 'Must enter a name!'),
-      month: (value) => (value.length > 0 ? null : 'Must pick a month'),
-      day: (value) => (value.length > 0 ? null : 'Must pick a day'),
+      date: (value) => (value !== null ? null : 'Must enter a date!'),
     },
     // convert the date from strign with suffix to number
     transformValues: (values) => ({
       name: values.name,
-      // transform month string to number (jan -> 1)
-      month: new Date(values.month + '-1-01').getMonth() + 1,
-      // convert day to int and remove suffix
-      day: parseInt(values.day.match(/\d/g).join('')),
+      // seperate date into month and date
+      month: values.date.getMonth() + 1,
+      day: values.date.getDate(),
     }),
   })
 
   // submit the birthday form to the database
-  function handleSubmit(values) {
+  async function handleSubmit(values) {
     setFormLoading(true)
     console.log('the values of the form', values)
-    const res = birthdayService.addBirthday(values)
-    console.log(res)
+    await birthdayService.addBirthday(values)
     form.reset()
     setFormLoading(false)
   }
@@ -63,23 +73,25 @@ export default function BirthdayFrom() {
           <TextInput
             label="Name"
             placeholder="Person Name"
+            size="md"
             {...form.getInputProps('name')}
           />
-          <Select
-            placeholder="Month"
-            label="Month"
-            searchable
-            nothingFound="No options"
-            data={data.month}
-            {...form.getInputProps('month')}
-          />
-          <Select
-            placeholder="Day"
-            label="Day"
-            searchable
-            nothingFound="No Options"
-            data={data.day}
-            {...form.getInputProps('day')}
+          <DatePicker
+            dropdownType={isMobile ? 'modal' : 'popover'}
+            placeholder="Pick date"
+            label="Birthday"
+            firstDayOfWeek="sunday"
+            minDate={dayjs(new Date()).startOf('year').toDate()}
+            maxDate={dayjs(new Date()).endOf('year').toDate()}
+            dayClassName={(date, modifiers) =>
+              cx({
+                [classes.weekend]: modifiers.weekend && !modifiers.outside,
+              })
+            }
+            //styles={{ root: { width: '15rem' } }}
+            size="md"
+            icon={<IconCalendar size={16} />}
+            {...form.getInputProps('date')}
           />
         </Flex>
         <Space h="md" />
