@@ -36,6 +36,7 @@ export default function BirthdayFrom() {
   // mutation for handling creating birthdays
   const mutation = useMutation(
     (birthday) => {
+      setFormLoading(true)
       return birthdayService.addBirthday(birthday)
     },
     {
@@ -110,12 +111,7 @@ export default function BirthdayFrom() {
         </Flex>
         <Space h="md" />
         <Center>
-          <Button
-            size="md"
-            loading={formLoading}
-            type="submit"
-            onClick={() => setFormLoading(true)}
-          >
+          <Button size="md" loading={formLoading} type="submit">
             Submit
           </Button>
         </Center>

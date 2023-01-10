@@ -99,6 +99,7 @@ export default function Register() {
             withAsterisk
             label="Phone Number"
             placeholder="xxx-xxx-xxxx"
+            description="U.S. numbers only"
             {...form.getInputProps('number')}
           />
           <PasswordInput
