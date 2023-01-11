@@ -11,11 +11,13 @@ import {
   Text,
 } from '@mantine/core'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 
 export default function Register() {
   const navigate = useNavigate()
   const { session, register } = useAuth()
   const [loading, setLoading] = useState(false)
+  const notificationCtx = useNotification()
 
   // send user to home page when logged in
   useEffect(() => {
@@ -64,7 +66,8 @@ export default function Register() {
         values.name
       )
       if (error) {
-        console.log(error)
+        // send error notifications
+        notificationCtx.error(error.message)
       } else {
         navigate('/')
       }

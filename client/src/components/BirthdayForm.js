@@ -17,6 +17,7 @@ import { DatePicker } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { IconCalendar } from '@tabler/icons'
 import { useMutation, useQueryClient } from 'react-query'
+import { useNotification } from '../context/NotificationContext'
 
 // styles for the calendar displayed for date selection
 const useStyles = createStyles((theme) => ({
@@ -33,6 +34,7 @@ export default function BirthdayFrom() {
   const isMobile = useMediaQuery('(max-width: 755px)')
   const { classes, cx } = useStyles()
   const queryClient = useQueryClient()
+  const notificationCtx = useNotification()
   // mutation for handling creating birthdays
   const mutation = useMutation(
     (birthday) => {
@@ -42,11 +44,12 @@ export default function BirthdayFrom() {
     {
       onError: () => {
         //TODO: add an alert telling the user about the error
-        console.log('error happened unable to delete item')
+        notificationCtx.error('Failed to add birthday. Please try again.')
       },
       onSuccess: async (data, variables, context) => {
         // refetch the data now that we added something
         await queryClient.invalidateQueries('birthdays')
+        notificationCtx.success('Successfully added birthday!')
       },
       onSettled: (data, error, variables, context) => {
         // close the popup and refresh states

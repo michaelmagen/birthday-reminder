@@ -12,12 +12,14 @@ import {
 import { IconTrash } from '@tabler/icons'
 import birthdayService from '../services/bday'
 import { useMutation, useQueryClient } from 'react-query'
+import { useNotification } from '../context/NotificationContext'
 
 export default function BirthdayList({ birthdayData }) {
   const [openPopup, setOpenPopup] = useState(false)
   const [idToDelete, setIdToDelete] = useState(null)
   const [loading, setLoading] = useState(false)
   const queryClient = useQueryClient()
+  const notificationCtx = useNotification()
   // mutation for deleting birthday reminders
   const mutation = useMutation(
     (id) => {
@@ -26,11 +28,12 @@ export default function BirthdayList({ birthdayData }) {
     {
       onError: () => {
         //TODO: add an alert telling the user about the error
-        console.log('error happened unable to delete item')
+        notificationCtx.error('Failed to delete birthday. Please try again.')
       },
       onSuccess: async (data, variables, context) => {
         // refetch the data now that we added something
         await queryClient.invalidateQueries('birthdays')
+        notificationCtx.success('Birthday successfuly deleted.')
       },
       onSettled: (data, error, variables, context) => {
         // close the popup and refresh states

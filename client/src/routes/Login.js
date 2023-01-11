@@ -11,11 +11,13 @@ import {
   Text,
 } from '@mantine/core'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 
 export default function Login() {
   const navigate = useNavigate()
   const { session, login } = useAuth()
   const [loading, setLoading] = useState(false)
+  const notificationCtx = useNotification()
 
   // send user to home page when logged in
   useEffect(() => {
@@ -44,7 +46,8 @@ export default function Login() {
       const error = await login(values.email, values.password)
       // if successful, navigate to home, otherwise throw error
       if (error) {
-        console.log('can not login')
+        // send error notifications
+        notificationCtx.error('Unable to log in. Please try again.')
       } else {
         navigate('/')
       }
