@@ -129,7 +129,7 @@ export default function Register() {
             </Button>
           </Group>
         </form>
-        <Text ta="center" mt="md">
+        <Text ta="center" mt="md" mb="xl">
           Already have an account?<br></br>
           <Link to={'/login'}>Log in here!</Link>
         </Text>

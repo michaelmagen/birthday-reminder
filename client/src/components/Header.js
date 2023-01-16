@@ -1,5 +1,6 @@
 import { Header, Title, Group, createStyles, Container } from '@mantine/core'
 import { useLocation } from 'react-router-dom'
+import { useMediaQuery } from '@mantine/hooks'
 import ThemeButton from './ThemeButton'
 import GithubButton from './GithubButton'
 import SignOutButton from './SignOutButton'
@@ -24,13 +25,14 @@ export default function SiteHeader() {
   const { classes } = useStyles()
   // get the current route location
   const location = useLocation()
+  const isMobile = useMediaQuery('(max-width: 640px)')
 
   return (
     <Header mb={20}>
       <Container fluid px="xl">
         <div className={classes.inner}>
           <Title order={2} weight={1000} align="center">
-            🎉 Birthday Reminders🎉
+            {isMobile ? '🎉' : '🎉 Birthday Reminders🎉'}
           </Title>
           <HeaderMenu />
           <Group spacing="lg" className={classes.buttons}>
