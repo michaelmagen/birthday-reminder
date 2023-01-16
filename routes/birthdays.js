@@ -2,9 +2,10 @@
 const express = require('express')
 const router = express.Router()
 const supabase = require('../utils/db')
+const { authorizeRequest } = require('../utils/middleware')
 
 // insert new birthday to database
-router.post('/', async (req, res) => {
+router.post('/', authorizeRequest, async (req, res) => {
   const { name, month, day } = req.body
   const user_id = req.user.data.user.id
 
@@ -40,7 +41,7 @@ router.post('/', async (req, res) => {
 
 // TODO: TEST THESE ROUTES
 
-router.get('/', async (req, res) => {
+router.get('/', authorizeRequest, async (req, res) => {
   const user_id = req.user.data.user.id
 
   const { data, error } = await supabase
@@ -57,7 +58,7 @@ router.get('/', async (req, res) => {
   res.json(data).end()
 })
 // get birthdays on month/day from specific user
-router.get('/:month/:day', async (req, res) => {
+router.get('/:month/:day', authorizeRequest, async (req, res) => {
   // ensure that month and date are nums and in proper range
   const month = parseInt(req.params.month)
   const day = parseInt(req.params.day)
@@ -102,7 +103,7 @@ router.get('/:month/:day', async (req, res) => {
 })
 
 // delete birthday with specifig id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authorizeRequest, async (req, res) => {
   // delete item from database
   const { error } = await supabase
     .from('birthdays')
