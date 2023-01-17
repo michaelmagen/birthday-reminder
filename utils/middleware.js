@@ -28,6 +28,11 @@ const authorizeRequest = async (req, res, next) => {
   next()
 }
 
+const unknownEndpoint = (req, res, next) => {
+  res.redirect('/')
+}
+
 module.exports = {
   authorizeRequest,
+  unknownEndpoint,
 }
