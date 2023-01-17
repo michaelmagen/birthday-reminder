@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - SUPABASE_SECRET_KEY=${SUPABASE_SECRET_KEY}
+      - PORT=${PORT}
+    container_name: api_backend
+    ports:
+      - '3003:3003'
+    volumes:
+      - ./:/app
+    networks:
+      - full-app
+  client:
+    build: ./client
+    container_name: client_frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./client:/app
+    stdin_open: true
+    tty: true
+    networks:
+      - full-app
+networks:
+  full-app:
+    driver: bridge
+
