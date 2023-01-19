@@ -23,7 +23,7 @@ The frontend of the application is built using React. It features a responsive d
 
 ### Deployment
 
-The application is deployed through fly.io and can be accessed live. It is also dockerized, which means it can be run locally with the command "docker-compose up". Please note that the .env variables need to be replaced to run the project locally.
+The application is deployed through fly.io and can be accessed live. It is also dockerized, which means it can be run locally with the command `docker-compose up`. Please note that the .env variables need to be replaced to run the project locally.
 
 ## Credits
 
